@@ -1,0 +1,48 @@
+import Link from "next/link";
+import { GlownaTab } from "./glowna-tab";
+
+const TABS = [
+  { value: "glowna", label: "Główna" },
+  { value: "hof",    label: "Hall of Fame" },
+  { value: "gracze", label: "Gracze" },
+] as const;
+
+type GTab = (typeof TABS)[number]["value"];
+
+export function GildiaTab({ gtab }: { gtab: string }) {
+  const active: GTab = (TABS.some((t) => t.value === gtab) ? gtab : "glowna") as GTab;
+
+  return (
+    <div>
+      <div className="flex gap-2 mb-6">
+        {TABS.map((t) => (
+          <Link
+            key={t.value}
+            href={`/dashboard/gildia?tab=gildia&gtab=${t.value}`}
+            className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
+              active === t.value
+                ? "bg-amber-600 text-white"
+                : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
+            }`}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
+      {active === "glowna" && <GlownaTab />}
+
+      {active === "hof" && (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
+          W budowie — tu pojawi się Hall of Fame.
+        </div>
+      )}
+
+      {active === "gracze" && (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
+          W budowie — tu pojawi się lista graczy.
+        </div>
+      )}
+    </div>
+  );
+}

@@ -2,50 +2,60 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StartTab } from "./tabs/start-tab";
 import { SkladkiTab } from "./tabs/skladki-tab";
+import { GildiaTab } from "./tabs/gildia-tab";
 
-export default async function GildiaPage() {
+const TABS = [
+  { value: "start",    label: "Start" },
+  { value: "gildia",   label: "Gildia" },
+  { value: "skladki",  label: "Składki" },
+] as const;
+
+type Tab = (typeof TABS)[number]["value"];
+
+export default async function GildiaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string; gtab?: string }>;
+}) {
   const session = await auth();
   if (!session) redirect("/login");
+
+  const params = await searchParams;
+  const tab: Tab = (TABS.some((t) => t.value === params.tab) ? params.tab : "start") as Tab;
+  const gtab = params.gtab ?? "glowna";
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-6">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
-          <Link
-            href="/dashboard"
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-          >
+          <Link href="/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" })}>
             ← Powrót
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-amber-500">Fenix - gildia</h1>
-          </div>
+          <h1 className="text-2xl font-bold text-amber-500">Fenix - gildia</h1>
         </div>
 
-        <Tabs defaultValue="start">
-          <TabsList className="bg-zinc-900 border border-zinc-800 mb-6">
-            <TabsTrigger value="start">Start</TabsTrigger>
-            <TabsTrigger value="gildia">Gildia</TabsTrigger>
-            <TabsTrigger value="skladki">Składki</TabsTrigger>
-          </TabsList>
+        {/* Tab buttons */}
+        <div className="flex gap-2 mb-6">
+          {TABS.map((t) => (
+            <Link
+              key={t.value}
+              href={`/dashboard/gildia?tab=${t.value}`}
+              className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
+                tab === t.value
+                  ? "bg-amber-600 text-white"
+                  : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
+              }`}
+            >
+              {t.label}
+            </Link>
+          ))}
+        </div>
 
-          <TabsContent value="start">
-            {session.user && <StartTab user={session.user} />}
-          </TabsContent>
-
-          <TabsContent value="gildia">
-            <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
-              W budowie — tu pojawi się panel gildii.
-            </div>
-          </TabsContent>
-
-          <TabsContent value="skladki">
-            <SkladkiTab />
-          </TabsContent>
-        </Tabs>
+        {tab === "start" && session.user && <StartTab user={session.user} />}
+        {tab === "gildia"  && <GildiaTab gtab={gtab} />}
+        {tab === "skladki" && <SkladkiTab />}
       </div>
     </main>
   );
