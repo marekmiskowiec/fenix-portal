@@ -85,7 +85,7 @@ model Character {
   name      String
   class     String
   level     Int      @default(1)
-  inGuild   Boolean  @default(true)
+  guild     String   @default("Fenix")
   inGrota   Boolean  @default(false)
   createdAt DateTime @default(now())
 }

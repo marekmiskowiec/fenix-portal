@@ -1,12 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -16,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { CharacterDialog } from "@/components/character-dialog";
 import type { User } from "next-auth";
 
 async function getUserData(userId: string) {
@@ -38,11 +34,14 @@ async function getUserData(userId: string) {
 }
 
 const CLASS_COLORS: Record<string, string> = {
-  Wojownik: "text-red-400",
-  Ninja: "text-purple-400",
-  Sura: "text-orange-400",
-  Szaman: "text-green-400",
-  Lykan: "text-blue-400",
+  Body: "text-red-400",
+  Mental: "text-purple-400",
+  WP: "text-orange-400",
+  BM: "text-yellow-400",
+  Dagger: "text-pink-400",
+  Archer: "text-green-400",
+  Smok: "text-blue-400",
+  Healer: "text-teal-400",
 };
 
 export async function StartTab({ user }: { user: User }) {
@@ -64,11 +63,9 @@ export async function StartTab({ user }: { user: User }) {
             <p className="text-lg font-semibold text-white truncate">{user.name}</p>
             <p className="text-sm text-zinc-400">Discord</p>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <Badge className="bg-amber-600/20 text-amber-400 border-amber-600/40">
-              🔥 Fenix
-            </Badge>
-          </div>
+          <Badge className="bg-amber-600/20 text-amber-400 border-amber-600/40">
+            🔥 Fenix
+          </Badge>
         </CardContent>
       </Card>
 
@@ -121,9 +118,13 @@ export async function StartTab({ user }: { user: User }) {
       <Card className="bg-zinc-900 border-zinc-800">
         <CardHeader className="pb-3 flex-row items-center justify-between">
           <CardTitle className="text-base text-zinc-100">Moje postacie</CardTitle>
-          <Button size="sm" variant="outline" className="text-xs border-zinc-700 text-zinc-300">
-            + Dodaj postać
-          </Button>
+          <CharacterDialog
+            trigger={
+              <Button size="sm" variant="outline" className="text-xs border-zinc-700 text-zinc-300 h-8">
+                + Dodaj postać
+              </Button>
+            }
+          />
         </CardHeader>
         <CardContent>
           {characters.length === 0 ? (
@@ -146,13 +147,7 @@ export async function StartTab({ user }: { user: User }) {
                 {characters.map((char) => (
                   <TableRow key={char.id} className="border-zinc-800">
                     <TableCell className="font-medium text-white">{char.name}</TableCell>
-                    <TableCell>
-                      {char.inGuild ? (
-                        <span className="text-green-400 text-sm">Tak</span>
-                      ) : (
-                        <span className="text-zinc-500 text-sm">Nie</span>
-                      )}
-                    </TableCell>
+                    <TableCell className="text-zinc-300 text-sm">{char.guild}</TableCell>
                     <TableCell>
                       {char.inGrota ? (
                         <span className="text-green-400 text-sm">Tak</span>
@@ -167,9 +162,14 @@ export async function StartTab({ user }: { user: User }) {
                     </TableCell>
                     <TableCell className="text-zinc-300">{char.level}</TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="ghost" className="text-xs text-zinc-400 h-7">
-                        Edytuj
-                      </Button>
+                      <CharacterDialog
+                        character={char}
+                        trigger={
+                          <Button size="sm" variant="ghost" className="text-xs text-zinc-400 h-7 hover:text-white">
+                            Edytuj
+                          </Button>
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
