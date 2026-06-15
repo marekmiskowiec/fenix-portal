@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { supabase } from "@/lib/supabase";
 import { WitchTable } from "./witch-table";
 
@@ -58,6 +59,8 @@ export function WiedzmTab() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [volume, setVolume] = useState(0.7);
   const [startedBy, setStartedBy] = useState<string | null>(null);
+
+  const { data: session } = useSession();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -143,9 +146,9 @@ export function WiedzmTab() {
     if (running) return;
     unlockAudio();
     const startedAt = Date.now();
-    const payload: SkillEvent = { type: "start", startedAt, startedBy: "Lider" };
+    const payload: SkillEvent = { type: "start", startedAt, startedBy: session?.user?.name ?? "Nieznany" };
     await supabase.channel(CHANNEL).send({ type: "broadcast", event: "skill", payload });
-    syncTimer(startedAt, "Lider");
+    syncTimer(startedAt, session?.user?.name ?? "Nieznany");
     setJoined(true); // controller auto-joins
     // play immediately for controller
     setTimeout(() => {
@@ -235,24 +238,24 @@ export function WiedzmTab() {
 
         {/* Status */}
         {running && startTime && (
-          <div className="rounded-lg border border-green-700/40 bg-green-900/10 px-4 py-3 flex flex-col gap-1">
+          <div className="rounded-lg border border-green-700/40 bg-green-900/10 px-4 py-4 flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-green-400 text-sm font-semibold">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-green-400 text-base font-bold">
                 Alarm aktywny {joined ? "🔊" : "🔇"}
               </span>
             </div>
-            <p className="text-zinc-400 text-xs">
+            <p className="text-zinc-300 text-sm">
               Uruchomiony o:{" "}
-              <span className="text-zinc-200">{formatTime(startTime)}</span>
-              {startedBy && <span className="text-zinc-500"> przez {startedBy}</span>}
+              <span className="text-white font-medium">{formatTime(startTime)}</span>
+              {startedBy && <span className="text-zinc-400"> przez {startedBy}</span>}
             </p>
-            <p className="text-zinc-400 text-xs">
+            <p className="text-zinc-300 text-sm">
               Następny dźwięk za:{" "}
-              <span className="text-red-300 font-bold tabular-nums">{countdown}s</span>
+              <span className="text-red-300 font-bold tabular-nums text-base">{countdown}s</span>
             </p>
             {!joined && (
-              <p className="text-yellow-500 text-xs mt-1">
+              <p className="text-yellow-400 text-sm mt-1">
                 Kliknij DOŁĄCZ aby słyszeć alarm.
               </p>
             )}

@@ -19,6 +19,10 @@ export function formatHHMM(date: Date): string {
   return date.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
 }
 
+export function formatHHMMSS(date: Date): string {
+  return date.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
 export function formatKillTime(killedAt: Date | null, now: Date = new Date()): string {
   if (!killedAt) return "—";
   return `${formatHHMM(killedAt)} ${getDayLabel(killedAt, now)}`;

@@ -133,6 +133,18 @@ model WitchKill {
   updatedAt    DateTime  @updatedAt
 }
 
+model BossTimer {
+  id           String    @id @default(cuid())
+  boss         String
+  channel      String
+  killedAt     DateTime?
+  killedByName String?
+  killedById   String?
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([boss, channel])
+}
+
 model BossKill {
   id        String   @id @default(cuid())
   bossName  String
