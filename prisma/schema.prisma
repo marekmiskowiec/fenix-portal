@@ -123,6 +123,16 @@ model Timer {
   createdAt DateTime @default(now())
 }
 
+// One record per channel, upserted on each kill
+model WitchKill {
+  id           String    @id @default(cuid())
+  channel      String    @unique
+  killedAt     DateTime?
+  killedByName String?
+  killedById   String?
+  updatedAt    DateTime  @updatedAt
+}
+
 model BossKill {
   id        String   @id @default(cuid())
   bossName  String

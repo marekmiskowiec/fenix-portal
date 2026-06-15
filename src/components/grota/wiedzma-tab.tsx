@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { WitchTable } from "./witch-table";
 
 const INTERVAL_SECONDS = 20;
 const CHANNEL = "grota-wiedzma-skill";
@@ -172,6 +173,11 @@ export function WiedzmTab() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Respawn table — full width at the top */}
+      <div className="col-span-1 lg:col-span-2">
+        <WitchTable />
+      </div>
+
       <div className="flex flex-col gap-4">
         <h2 className="text-lg font-bold text-red-400">Skill wróżki</h2>
 
@@ -254,13 +260,18 @@ export function WiedzmTab() {
         )}
       </div>
 
-      {/* Right column: placeholder */}
+      {/* Right column: grota map */}
       <div className="flex flex-col gap-4">
-        <h2 className="text-lg font-bold text-zinc-500">—</h2>
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-8 text-center text-zinc-600 text-sm">
-          Tu pojawi się kolejna funkcja.
+        <h2 className="text-lg font-bold text-zinc-400">Mapa groty</h2>
+        <div className="rounded-lg border border-zinc-800 overflow-hidden">
+          <img
+            src="/mapa-groty.jpg"
+            alt="Mapa groty"
+            className="w-full h-auto object-contain"
+          />
         </div>
       </div>
+
     </div>
   );
 }
