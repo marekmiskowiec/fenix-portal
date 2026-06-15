@@ -22,21 +22,28 @@ export async function getGuildMembers() {
   });
 }
 
+async function requireEditor() {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } });
+  if (user?.role !== "ADMINISTRATOR" && user?.role !== "RADA") throw new Error("Forbidden");
+}
+
 export async function createWitchSession(data: {
   channel: string;
   killedAt: string;
   attendees: { name: string; role: string | null; present: boolean }[];
   drops: { itemName: string; quantity: number }[];
 }) {
+  await requireEditor();
   const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
 
   await prisma.witchSession.create({
     data: {
       channel: data.channel,
       killedAt: new Date(data.killedAt),
-      addedByName: session.user.name ?? "Nieznany",
-      addedById: session.user.id,
+      addedByName: session?.user?.name ?? "Nieznany",
+      addedById: session?.user?.id ?? "",
       attendees: {
         create: data.attendees.map((a) => ({
           name: a.name,
@@ -56,8 +63,7 @@ export async function createWitchSession(data: {
 }
 
 export async function deleteWitchSession(id: string) {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  await requireEditor();
   await prisma.witchSession.delete({ where: { id } });
   revalidatePath("/dashboard/grota");
 }

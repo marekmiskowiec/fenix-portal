@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { useSession } from "next-auth/react";
 import { getWitchSessions, getGuildMembers, deleteWitchSession } from "@/app/dashboard/grota/wiedzma-historia-actions";
 import { WitchSessionForm } from "./wiedzma-session-form";
 
@@ -150,6 +151,8 @@ function SessionCard({ session, onOpen }: { session: Session; onOpen: () => void
 }
 
 export function WitchHistoria() {
+  const { data: session } = useSession();
+  const canEdit = session?.user?.role === "ADMINISTRATOR" || session?.user?.role === "RADA";
   const today = new Date();
   const weekAgo = new Date(today);
   weekAgo.setDate(today.getDate() - 7);
@@ -181,12 +184,14 @@ export function WitchHistoria() {
     <div className="flex flex-col gap-5">
       <div className="flex items-end justify-between">
         <h2 className="text-xl font-bold text-white">Historia Wróżek</h2>
-        <button
-          onClick={() => setShowForm(true)}
-          className="px-4 py-2 rounded-lg text-sm font-bold bg-red-700 hover:bg-red-600 text-white transition-colors"
-        >
-          + Dodaj sesję
-        </button>
+        {canEdit && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-4 py-2 rounded-lg text-sm font-bold bg-red-700 hover:bg-red-600 text-white transition-colors"
+          >
+            + Dodaj sesję
+          </button>
+        )}
       </div>
 
       {/* Date filter */}
