@@ -18,7 +18,7 @@ async function getUserData(userId: string) {
   const [dues, characters] = await Promise.all([
     prisma.due.findMany({
       where: { userId },
-      orderBy: [{ year: "desc" }, { month: "desc" }],
+      orderBy: { weekStart: "desc" },
       take: 12,
     }),
     prisma.character.findMany({
@@ -27,8 +27,11 @@ async function getUserData(userId: string) {
     }),
   ]);
 
-  const totalPaid = dues.filter((d) => d.paid).reduce((s, d) => s + d.amount, 0);
-  const totalOwed = dues.filter((d) => !d.paid).reduce((s, d) => s + d.amount, 0);
+  const totalOwed = dues.filter((d) => !d.onVacation).reduce((s, d) => s + d.amount, 0);
+  const [payments] = await Promise.all([
+    prisma.payment.findMany({ where: { userId } }),
+  ]);
+  const totalPaid = payments.reduce((s, p) => s + p.amount, 0);
 
   return { dues, characters, totalPaid, totalOwed };
 }
@@ -93,22 +96,25 @@ export async function StartTab({ user }: { user: User }) {
           </div>
 
           {dues.length === 0 ? (
-            <p className="text-sm text-zinc-500 text-center py-2">Brak zapisanych składek.</p>
+            <p className="text-sm text-zinc-500 text-center py-2">Brak naliczonych składek.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
-              {dues.map((due) => (
-                <div
-                  key={due.id}
-                  className={`text-xs px-2 py-1 rounded border ${
-                    due.paid
-                      ? "border-green-700/40 bg-green-900/20 text-green-400"
-                      : "border-red-700/40 bg-red-900/20 text-red-400"
-                  }`}
-                >
-                  {due.month.toString().padStart(2, "0")}/{due.year}
-                  {due.paid ? " ✓" : " ✗"}
-                </div>
-              ))}
+              {dues.map((due) => {
+                const d = new Date(due.weekStart);
+                const label = `${d.getDate().toString().padStart(2, "0")}.${(d.getMonth() + 1).toString().padStart(2, "0")}`;
+                return (
+                  <div
+                    key={due.id}
+                    className={`text-xs px-2 py-1 rounded border ${
+                      due.onVacation
+                        ? "border-blue-700/40 bg-blue-900/20 text-blue-400"
+                        : "border-zinc-700/40 bg-zinc-800/40 text-zinc-400"
+                    }`}
+                  >
+                    {label}{due.onVacation ? " ✈" : ""}
+                  </div>
+                );
+              })}
             </div>
           )}
         </CardContent>

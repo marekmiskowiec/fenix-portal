@@ -35,18 +35,20 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
-  discordId     String?   @unique
-  role          Role       @default(MEMBER)
+  discordId     String?     @unique
+  role          Role        @default(MEMBER)
   accounts      Account[]
   sessions      Session[]
   dues          Due[]
+  payments      Payment[]
+  vacations     Vacation[]
   characters    Character[]
-  createdAt     DateTime   @default(now())
+  createdAt     DateTime    @default(now())
 }
 
 model VerificationToken {
@@ -63,19 +65,40 @@ enum Role {
   LEADER
 }
 
+// Weekly due record — created every Monday for each member
 model Due {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount    Int
-  month     Int
-  year      Int
-  paid      Boolean   @default(false)
-  paidAt    DateTime?
-  note      String?
-  createdAt DateTime  @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart  DateTime // Monday 00:00 UTC
+  amount     Int      @default(500000)
+  onVacation Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
-  @@unique([userId, month, year])
+  @@unique([userId, weekStart])
+}
+
+// Payment / deposit made by or for a member
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int
+  note      String?
+  paidAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+// Vacation request — exempts member from dues for N weeks
+model Vacation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart DateTime // First Monday of vacation
+  weeks     Int      @default(1)
+  approved  Boolean  @default(false)
+  reason    String?
+  createdAt DateTime @default(now())
 }
 
 model Character {

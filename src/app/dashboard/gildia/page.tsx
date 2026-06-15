@@ -4,6 +4,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StartTab } from "./tabs/start-tab";
+import { SkladkiTab } from "./tabs/skladki-tab";
 
 export default async function GildiaPage() {
   const session = await auth();
@@ -42,9 +43,7 @@ export default async function GildiaPage() {
           </TabsContent>
 
           <TabsContent value="skladki">
-            <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
-              W budowie — tu pojawią się składki.
-            </div>
+            <SkladkiTab />
           </TabsContent>
         </Tabs>
       </div>
