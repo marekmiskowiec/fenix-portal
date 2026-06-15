@@ -52,7 +52,17 @@ function InstructionBox() {
   );
 }
 
+type WiedzmaTab = "glowna" | "historia" | "rozliczenia" | "statystyki";
+
+const TABS: { id: WiedzmaTab; label: string }[] = [
+  { id: "glowna", label: "Główna" },
+  { id: "historia", label: "Historia" },
+  { id: "rozliczenia", label: "Rozliczenia" },
+  { id: "statystyki", label: "Statystyki" },
+];
+
 export function WiedzmTab() {
+  const [activeTab, setActiveTab] = useState<WiedzmaTab>("glowna");
   const [running, setRunning] = useState(false);
   const [joined, setJoined] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -175,106 +185,139 @@ export function WiedzmTab() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Respawn table — full width at the top */}
-      <div className="col-span-1 lg:col-span-2">
-        <WitchTable />
+    <div className="flex flex-col gap-6">
+      {/* Tab bar */}
+      <div className="flex gap-2 border-b border-zinc-800 pb-0">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 text-sm font-semibold rounded-t-lg border-b-2 transition-colors ${
+              activeTab === tab.id
+                ? "border-red-500 text-red-400 bg-zinc-900"
+                : "border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <div className="flex flex-col gap-4">
-        <h2 className="text-lg font-bold text-red-400">Skill wróżki</h2>
+      {/* Główna */}
+      {activeTab === "glowna" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="col-span-1 lg:col-span-2">
+            <WitchTable />
+          </div>
 
-        <InstructionBox />
+          <div className="flex flex-col gap-4">
+            <h2 className="text-lg font-bold text-red-400">Skill wróżki</h2>
 
-        {/* START / RESET */}
-        <div className="flex gap-3">
-          <button
-            onClick={handleStart}
-            disabled={running}
-            className="flex-1 py-3 rounded-lg font-bold text-sm bg-green-700 hover:bg-green-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            ▶ START
-          </button>
-          <button
-            onClick={handleReset}
-            disabled={!running}
-            className="flex-1 py-3 rounded-lg font-bold text-sm bg-zinc-700 hover:bg-zinc-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            ■ RESET
-          </button>
-        </div>
+            <InstructionBox />
 
-        {/* JOIN / LEAVE */}
-        {!joined ? (
-          <button
-            onClick={handleJoin}
-            disabled={!running}
-            className="w-full py-3 rounded-lg font-bold text-sm border-2 transition-all bg-blue-700 hover:bg-blue-600 text-white border-transparent disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            🔔 DOŁĄCZ
-          </button>
-        ) : (
-          <button
-            onClick={handleLeave}
-            className="w-full py-3 rounded-lg font-bold text-sm border-2 transition-all bg-zinc-700 hover:bg-zinc-600 text-white border-transparent"
-          >
-            🔕 OPUŚĆ
-          </button>
-        )}
+            <div className="flex gap-3">
+              <button
+                onClick={handleStart}
+                disabled={running}
+                className="flex-1 py-3 rounded-lg font-bold text-sm bg-green-700 hover:bg-green-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                ▶ START
+              </button>
+              <button
+                onClick={handleReset}
+                disabled={!running}
+                className="flex-1 py-3 rounded-lg font-bold text-sm bg-zinc-700 hover:bg-zinc-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                ■ RESET
+              </button>
+            </div>
 
-        {/* Volume */}
-        <div className="flex items-center gap-3 px-1">
-          <span className="text-zinc-500 text-xs w-16 shrink-0">🔉 Głośność</span>
-          <input
-            type="range" min={0} max={1} step={0.01}
-            value={volume}
-            onChange={(e) => setVolume(Number(e.target.value))}
-            className="flex-1 accent-red-500 cursor-pointer"
-          />
-          <span className="text-zinc-400 text-xs w-8 text-right">
-            {Math.round(volume * 100)}%
-          </span>
-        </div>
+            {!joined ? (
+              <button
+                onClick={handleJoin}
+                disabled={!running}
+                className="w-full py-3 rounded-lg font-bold text-sm border-2 transition-all bg-blue-700 hover:bg-blue-600 text-white border-transparent disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                🔔 DOŁĄCZ
+              </button>
+            ) : (
+              <button
+                onClick={handleLeave}
+                className="w-full py-3 rounded-lg font-bold text-sm border-2 transition-all bg-zinc-700 hover:bg-zinc-600 text-white border-transparent"
+              >
+                🔕 OPUŚĆ
+              </button>
+            )}
 
-        {/* Status */}
-        {running && startTime && (
-          <div className="rounded-lg border border-green-700/40 bg-green-900/10 px-4 py-4 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-green-400 text-base font-bold">
-                Alarm aktywny {joined ? "🔊" : "🔇"}
+            <div className="flex items-center gap-3 px-1">
+              <span className="text-zinc-500 text-xs w-16 shrink-0">🔉 Głośność</span>
+              <input
+                type="range" min={0} max={1} step={0.01}
+                value={volume}
+                onChange={(e) => setVolume(Number(e.target.value))}
+                className="flex-1 accent-red-500 cursor-pointer"
+              />
+              <span className="text-zinc-400 text-xs w-8 text-right">
+                {Math.round(volume * 100)}%
               </span>
             </div>
-            <p className="text-zinc-300 text-sm">
-              Uruchomiony o:{" "}
-              <span className="text-white font-medium">{formatTime(startTime)}</span>
-              {startedBy && <span className="text-zinc-400"> przez {startedBy}</span>}
-            </p>
-            <p className="text-zinc-300 text-sm">
-              Następny dźwięk za:{" "}
-              <span className="text-red-300 font-bold tabular-nums text-base">{countdown}s</span>
-            </p>
-            {!joined && (
-              <p className="text-yellow-400 text-sm mt-1">
-                Kliknij DOŁĄCZ aby słyszeć alarm.
-              </p>
+
+            {running && startTime && (
+              <div className="rounded-lg border border-green-700/40 bg-green-900/10 px-4 py-4 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-green-400 text-base font-bold">
+                    Alarm aktywny {joined ? "🔊" : "🔇"}
+                  </span>
+                </div>
+                <p className="text-zinc-300 text-sm">
+                  Uruchomiony o:{" "}
+                  <span className="text-white font-medium">{formatTime(startTime)}</span>
+                  {startedBy && <span className="text-zinc-400"> przez {startedBy}</span>}
+                </p>
+                <p className="text-zinc-300 text-sm">
+                  Następny dźwięk za:{" "}
+                  <span className="text-red-300 font-bold tabular-nums text-base">{countdown}s</span>
+                </p>
+                {!joined && (
+                  <p className="text-yellow-400 text-sm mt-1">
+                    Kliknij DOŁĄCZ aby słyszeć alarm.
+                  </p>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
 
-      {/* Right column: grota map */}
-      <div className="flex flex-col gap-4">
-        <h2 className="text-lg font-bold text-zinc-400">Mapa groty</h2>
-        <div className="rounded-lg border border-zinc-800 overflow-hidden">
-          <img
-            src="/mapa-groty.jpg"
-            alt="Mapa groty"
-            className="w-full h-auto object-contain"
-          />
+          <div className="flex flex-col gap-4">
+            <h2 className="text-lg font-bold text-zinc-400">Mapa groty</h2>
+            <div className="rounded-lg border border-zinc-800 overflow-hidden">
+              <img
+                src="/mapa-groty.jpg"
+                alt="Mapa groty"
+                className="w-full h-auto object-contain"
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
+      {activeTab === "historia" && (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
+          W budowie — historia zbić wiedźmy.
+        </div>
+      )}
+
+      {activeTab === "rozliczenia" && (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
+          W budowie — rozliczenia z wiedźmy.
+        </div>
+      )}
+
+      {activeTab === "statystyki" && (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
+          W budowie — statystyki wiedźmy.
+        </div>
+      )}
     </div>
   );
 }

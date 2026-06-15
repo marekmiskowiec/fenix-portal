@@ -58,6 +58,11 @@ export default async function DashboardPage() {
             />
           )}
           <span className="text-sm text-zinc-400">{session.user?.name}</span>
+          {session.user.role === "ADMINISTRATOR" && (
+            <Link href="/dashboard/admin" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              ⚙ Admin
+            </Link>
+          )}
           <SignOutButton />
         </div>
       </header>

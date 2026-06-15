@@ -41,7 +41,7 @@ model User {
   emailVerified DateTime?
   image         String?
   discordId     String?     @unique
-  role          Role        @default(MEMBER)
+  role          Role        @default(CZLONEK)
   accounts      Account[]
   sessions      Session[]
   dues          Due[]
@@ -60,9 +60,9 @@ model VerificationToken {
 }
 
 enum Role {
-  MEMBER
-  OFFICER
-  LEADER
+  CZLONEK
+  RADA
+  ADMINISTRATOR
 }
 
 // Weekly due record — created every Monday for each member
