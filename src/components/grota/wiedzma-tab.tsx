@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { supabase } from "@/lib/supabase";
 import { WitchTable } from "./witch-table";
+import { WitchHistoria } from "./wiedzma-historia";
 
 const INTERVAL_SECONDS = 20;
 const CHANNEL = "grota-wiedzma-skill";
@@ -301,11 +302,7 @@ export function WiedzmTab() {
         </div>
       )}
 
-      {activeTab === "historia" && (
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
-          W budowie — historia zbić wiedźmy.
-        </div>
-      )}
+      {activeTab === "historia" && <WitchHistoria />}
 
       {activeTab === "rozliczenia" && (
         <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">

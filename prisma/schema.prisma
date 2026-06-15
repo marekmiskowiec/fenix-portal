@@ -123,6 +123,34 @@ model Timer {
   createdAt DateTime @default(now())
 }
 
+model WitchSession {
+  id          String          @id @default(cuid())
+  channel     String
+  killedAt    DateTime
+  addedByName String
+  addedById   String
+  attendees   WitchAttendee[]
+  drops       WitchDrop[]
+  createdAt   DateTime        @default(now())
+}
+
+model WitchAttendee {
+  id        String       @id @default(cuid())
+  sessionId String
+  session   WitchSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  name      String
+  role      String?
+  present   Boolean      @default(true)
+}
+
+model WitchDrop {
+  id        String       @id @default(cuid())
+  sessionId String
+  session   WitchSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  itemName  String
+  quantity  Int          @default(1)
+}
+
 // One record per channel, upserted on each kill
 model WitchKill {
   id           String    @id @default(cuid())
