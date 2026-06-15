@@ -41,11 +41,12 @@ model User {
   emailVerified DateTime?
   image         String?
   discordId     String?   @unique
-  role          Role      @default(MEMBER)
+  role          Role       @default(MEMBER)
   accounts      Account[]
   sessions      Session[]
   dues          Due[]
-  createdAt     DateTime  @default(now())
+  characters    Character[]
+  createdAt     DateTime   @default(now())
 }
 
 model VerificationToken {
@@ -75,6 +76,18 @@ model Due {
   createdAt DateTime  @default(now())
 
   @@unique([userId, month, year])
+}
+
+model Character {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  class     String
+  level     Int      @default(1)
+  inGuild   Boolean  @default(true)
+  inGrota   Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Timer {
