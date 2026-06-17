@@ -11,7 +11,7 @@ async function requireLeader() {
   if (user?.role !== "ADMINISTRATOR") throw new Error("Forbidden");
 }
 
-export async function setUserRole(userId: string, role: "CZLONEK" | "RADA" | "ADMINISTRATOR") {
+export async function setUserRole(userId: string, role: "CZLONEK" | "RADA" | "ADMINISTRATOR" | "BANK") {
   await requireLeader();
   await prisma.user.update({ where: { id: userId }, data: { role } });
   revalidatePath("/dashboard/admin");

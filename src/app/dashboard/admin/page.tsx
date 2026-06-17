@@ -7,12 +7,14 @@ import { RoleSelect } from "@/components/admin/role-select";
 
 const ROLE_BADGE: Record<string, string> = {
   ADMINISTRATOR: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  BANK: "bg-green-500/20 text-green-400 border-green-500/30",
   RADA: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   CZLONEK: "bg-zinc-700/50 text-zinc-400 border-zinc-600",
 };
 
 const ROLE_LABEL: Record<string, string> = {
   ADMINISTRATOR: "Administrator",
+  BANK: "Bank",
   RADA: "Rada",
   CZLONEK: "Członek",
 };
@@ -82,6 +84,7 @@ export default async function AdminPage() {
           <p className="font-semibold text-zinc-300 mb-2">Uprawnienia rang:</p>
           <ul className="flex flex-col gap-1">
             <li><span className="text-yellow-400 font-bold">Administrator</span> — pełny dostęp, zarządzanie rangami</li>
+            <li><span className="text-green-400 font-bold">Bank</span> — akceptowanie próśb o materiały gildijne</li>
             <li><span className="text-blue-400 font-bold">Rada</span> — edycja zbić, rozliczenia</li>
             <li><span className="text-zinc-400 font-bold">Członek</span> — podgląd + edycja timerów</li>
           </ul>

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { GlownaTab } from "./glowna-tab";
 import { GraczeTab } from "./gracze-tab";
+import { MateriałyTab } from "./materialy-tab";
 import { prisma } from "@/lib/prisma";
 
 const TABS = [
-  { value: "glowna", label: "Główna" },
-  { value: "hof",    label: "Hall of Fame" },
-  { value: "gracze", label: "Gracze" },
+  { value: "glowna",   label: "Główna" },
+  { value: "materialy", label: "Materiały Gildijne" },
+  { value: "gracze",   label: "Gracze" },
 ] as const;
 
 type GTab = (typeof TABS)[number]["value"];
@@ -21,6 +22,7 @@ export async function GildiaTab({ gtab }: { gtab: string }) {
           include: { user: { select: { name: true, image: true } } },
         })
       : [];
+
 
   return (
     <div>
@@ -42,11 +44,7 @@ export async function GildiaTab({ gtab }: { gtab: string }) {
 
       {active === "glowna" && <GlownaTab />}
 
-      {active === "hof" && (
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
-          W budowie — tu pojawi się Hall of Fame.
-        </div>
-      )}
+      {active === "materialy" && <MateriałyTab />}
 
       {active === "gracze" && <GraczeTab characters={characters} />}
     </div>

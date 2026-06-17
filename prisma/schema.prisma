@@ -47,8 +47,10 @@ model User {
   dues          Due[]
   payments      Payment[]
   vacations     Vacation[]
-  characters    Character[]
-  createdAt     DateTime    @default(now())
+  characters        Character[]
+  materialRequests  MaterialRequest[] @relation("MaterialRequests")
+  resolvedMaterials MaterialRequest[] @relation("ResolvedMaterialRequests")
+  createdAt         DateTime          @default(now())
 }
 
 model VerificationToken {
@@ -63,6 +65,13 @@ enum Role {
   CZLONEK
   RADA
   ADMINISTRATOR
+  BANK
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 // Weekly due record — created every Monday for each member
@@ -190,4 +199,21 @@ model Payout {
   recipient   String
   paidAt      DateTime @default(now())
   createdAt   DateTime @default(now())
+}
+
+model MaterialRequest {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation("MaterialRequests", fields: [userId], references: [id], onDelete: Cascade)
+  dykta         Int           @default(0)
+  pien          Int           @default(0)
+  kamien        Int           @default(0)
+  bodzio        Int           @default(0)
+  kamienDuchowy Int           @default(0)
+  yang          Int           @default(0)
+  status        RequestStatus @default(PENDING)
+  resolvedById  String?
+  resolvedBy    User?         @relation("ResolvedMaterialRequests", fields: [resolvedById], references: [id])
+  resolvedAt    DateTime?
+  createdAt     DateTime      @default(now())
 }

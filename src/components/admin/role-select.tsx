@@ -6,6 +6,7 @@ import { setUserRole } from "@/app/dashboard/admin/actions";
 const ROLES = [
   { value: "CZLONEK", label: "Członek", color: "text-zinc-400" },
   { value: "RADA", label: "Rada", color: "text-blue-400" },
+  { value: "BANK", label: "Bank", color: "text-green-400" },
   { value: "ADMINISTRATOR", label: "Administrator", color: "text-yellow-400" },
 ] as const;
 
@@ -13,7 +14,7 @@ export function RoleSelect({ userId, currentRole }: { userId: string; currentRol
   const [isPending, startTransition] = useTransition();
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const role = e.target.value as "CZLONEK" | "RADA" | "ADMINISTRATOR";
+    const role = e.target.value as "CZLONEK" | "RADA" | "ADMINISTRATOR" | "BANK";
     startTransition(() => setUserRole(userId, role));
   }
 
