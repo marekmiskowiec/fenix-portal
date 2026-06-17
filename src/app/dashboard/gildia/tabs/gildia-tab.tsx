@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { GlownaTab } from "./glowna-tab";
+import { GraczeTab } from "./gracze-tab";
+import { prisma } from "@/lib/prisma";
 
 const TABS = [
   { value: "glowna", label: "Główna" },
@@ -9,8 +11,16 @@ const TABS = [
 
 type GTab = (typeof TABS)[number]["value"];
 
-export function GildiaTab({ gtab }: { gtab: string }) {
+export async function GildiaTab({ gtab }: { gtab: string }) {
   const active: GTab = (TABS.some((t) => t.value === gtab) ? gtab : "glowna") as GTab;
+
+  const characters =
+    active === "gracze"
+      ? await prisma.character.findMany({
+          orderBy: { level: "desc" },
+          include: { user: { select: { name: true, image: true } } },
+        })
+      : [];
 
   return (
     <div>
@@ -38,11 +48,7 @@ export function GildiaTab({ gtab }: { gtab: string }) {
         </div>
       )}
 
-      {active === "gracze" && (
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
-          W budowie — tu pojawi się lista graczy.
-        </div>
-      )}
+      {active === "gracze" && <GraczeTab characters={characters} />}
     </div>
   );
 }
