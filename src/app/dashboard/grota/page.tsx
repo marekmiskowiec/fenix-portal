@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { GrotaContent } from "@/components/grota/grota-content";
+import { EchoTab } from "@/components/grota/echo-tab";
 
 export default async function GrotaPage() {
   const session = await auth();
@@ -17,7 +18,7 @@ export default async function GrotaPage() {
           </Link>
           <h1 className="text-2xl font-bold text-red-400">Grota</h1>
         </div>
-        <GrotaContent />
+        <GrotaContent echoContent={<EchoTab userId={session.user.id} />} />
       </div>
     </main>
   );

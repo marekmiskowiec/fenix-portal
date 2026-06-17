@@ -5,7 +5,7 @@ import { WiedzmTab } from "./wiedzma-tab";
 
 type Section = "wiedzma" | "echo";
 
-export function GrotaContent() {
+export function GrotaContent({ echoContent }: { echoContent: React.ReactNode }) {
   const [section, setSection] = useState<Section>("wiedzma");
 
   return (
@@ -35,11 +35,7 @@ export function GrotaContent() {
       </div>
 
       {section === "wiedzma" && <WiedzmTab />}
-      {section === "echo" && (
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-500">
-          W budowie — tu pojawi się sekcja Echo.
-        </div>
-      )}
+      {section === "echo" && echoContent}
     </div>
   );
 }

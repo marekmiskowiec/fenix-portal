@@ -50,6 +50,7 @@ model User {
   characters        Character[]
   materialRequests  MaterialRequest[] @relation("MaterialRequests")
   resolvedMaterials MaterialRequest[] @relation("ResolvedMaterialRequests")
+  echoEntries       EchoEntry[]
   createdAt         DateTime          @default(now())
 }
 
@@ -72,6 +73,12 @@ enum RequestStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+enum EchoResponse {
+  NABIJAM
+  BEDE
+  NIE
 }
 
 // Weekly due record — created every Monday for each member
@@ -199,6 +206,27 @@ model Payout {
   recipient   String
   paidAt      DateTime @default(now())
   createdAt   DateTime @default(now())
+}
+
+model EchoSession {
+  id        String      @id @default(cuid())
+  date      DateTime    // midnight UTC for that calendar day
+  entries   EchoEntry[]
+  createdAt DateTime    @default(now())
+
+  @@unique([date])
+}
+
+model EchoEntry {
+  id        String       @id @default(cuid())
+  sessionId String
+  session   EchoSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  response  EchoResponse
+  createdAt DateTime     @default(now())
+
+  @@unique([sessionId, userId])
 }
 
 model MaterialRequest {
